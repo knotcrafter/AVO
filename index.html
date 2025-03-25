@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AVO Partner Oy</title>
+    <link rel="icon" href="favicon.ico" type="image/x-icon" />
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        overflow: hidden;
+      }
+
+      body {
+        background: linear-gradient(45deg, #3a8187, #898181, #5a5a5a);
+      }
+
+      .avopartner {
+        position: absolute;
+        width: 100px;
+        height: 100px;
+        background-image: url("logo.jpg");
+        background-size: cover;
+        border-radius: 50%;
+        transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+      }
+
+      .highlight {
+        border: 5px solid yellow;
+        box-shadow: 0 0 10px yellow;
+      }
+
+      .avopartner:hover,
+      .avopartner:active {
+        opacity: 0;
+        transform: scale(0.5);
+      }
+
+      .email-container {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: Arial, sans-serif;
+        font-size: 16px;
+        color: #fff;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+      }
+
+      .email-container a {
+        color: #fffd00;
+        text-decoration: none;
+      }
+
+      .email-container a:hover {
+        text-decoration: underline;
+      }
+
+      .counter {
+        position: absolute;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-family: Arial, sans-serif;
+        font-size: 18px;
+        color: #fff;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.6);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="avopartner-container"></div>
+    <div class="counter">Popped: <span id="click-count">0</span></div>
+    <div class="email-container">
+      <p>
+        Contact us:
+        <a href="mailto:avopartner@gmail.com">avopartner@gmail.com</a><br />
+        Phone: <a href="tel:+358405789846">+358405789846</a><br />
+        Address:
+        <a
+          href="https://www.google.com/maps?q=Haltianpolku+11+C+29,+04440+Järvenpää,+Suomi"
+          target="_blank"
+          >Haltianpolku 11 C 29, 04440 Järvenpää, Suomi</a
+        >
+      </p>
+    </div>
+
+    <script>
+      const avopartnerContainer = document.getElementById(
+        "avopartner-container"
+      );
+      const clickCountSpan = document.getElementById("click-count");
+
+      let clickCount = 0;
+      let waitingForPair = false;
+      let pair = [];
+
+      const backgrounds = [
+        "linear-gradient(45deg, #ff9a8b, #fddc6e, #ff6f61)",
+        "linear-gradient(45deg, #a8d0e6, #f0f7f4, #f4c7c3)",
+        "linear-gradient(45deg, #d1e0e0, #f4f0fb, #a8c4d2)",
+        "linear-gradient(45deg, #c2e0c6, #e9f0d8, #f9e0d8)",
+      ];
+      let backgroundIndex = 0;
+
+      function createavopartner() {
+        const avopartner = document.createElement("div");
+        avopartner.classList.add("avopartner");
+
+        avopartner.style.left = `${Math.random() * window.innerWidth}px`;
+        avopartner.style.top = `${Math.random() * window.innerHeight}px`;
+
+        // Если нужно создать пару
+        if (waitingForPair) {
+          waitingForPair = false;
+          pair.push(avopartner);
+          avopartner.classList.add("highlight");
+        } else {
+          pair.push(avopartner);
+          setTimeout(() => {
+            if (pair.length === 2) {
+              pair[0].classList.add("highlight");
+              pair[1].classList.add("highlight");
+              waitingForPair = true;
+            }
+          }, Math.random() * 3000 + 2000); // Случайное время появления пары
+        }
+
+        avopartner.addEventListener("mouseenter", () =>
+          disappearavopartner(avopartner)
+        );
+        avopartner.addEventListener("touchstart", () =>
+          disappearavopartner(avopartner)
+        );
+
+        avopartnerContainer.appendChild(avopartner);
+
+        setTimeout(() => {
+          avopartner.remove();
+          pair = []; // Очистить пару
+        }, 25000);
+
+        animateavopartner(avopartner);
+      }
+
+      function disappearavopartner(avopartner) {
+        avopartner.style.opacity = "0";
+        avopartner.style.transform = "scale(0.5)";
+        setTimeout(() => avopartner.remove(), 300);
+
+        clickCount++;
+        clickCountSpan.textContent = clickCount;
+
+        // Проверяем, исчезли ли обе  из пары
+        if (pair.length === 2) {
+          if (pair[0].style.opacity === "0" && pair[1].style.opacity === "0") {
+            pair = [];
+          }
+        }
+
+        // Меняем фон каждые 50 лопнувших
+        if (clickCount % 50 === 0) {
+          document.body.style.background = backgrounds[backgroundIndex];
+          backgroundIndex = (backgroundIndex + 1) % backgrounds.length;
+        }
+      }
+
+      function animateavopartner(avopartner) {
+        const speedX = (Math.random() - 0.5) * 3;
+        const speedY = (Math.random() - 0.5) * 3;
+
+        let x = parseFloat(avopartner.style.left);
+        let y = parseFloat(avopartner.style.top);
+
+        function bounce() {
+          x += speedX;
+          y += speedY;
+
+          if (x < 0 || x > window.innerWidth - 100) {
+            avopartner.style.left = `${x < 0 ? 0 : window.innerWidth - 100}px`;
+          } else {
+            avopartner.style.left = `${x}px`;
+          }
+
+          if (y < 0 || y > window.innerHeight - 100) {
+            avopartner.style.top = `${y < 0 ? 0 : window.innerHeight - 100}px`;
+          } else {
+            avopartner.style.top = `${y}px`;
+          }
+
+          requestAnimationFrame(bounce);
+        }
+
+        bounce();
+      }
+
+      setInterval(createavopartner, 1000);
+    </script>
+  </body>
+</html>
